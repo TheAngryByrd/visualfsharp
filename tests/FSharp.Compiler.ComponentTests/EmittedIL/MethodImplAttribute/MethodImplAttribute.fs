@@ -77,3 +77,15 @@ module MethodImplAttribute =
     let ``Unmanaged_fs`` compilation =
         compilation
         |> verifyCompilation
+
+    // SOURCE=MethodImplAttribute.Async.fs         SCFLAGS="-a -g --optimize-" COMPILE_ONLY=1 POSTCMD="..\\CompareIL.cmd MethodImplAttribute.Async.dll"	# MethodImplAttribute.Async.fs - .NET 10 Runtime-Async
+    [<Theory; Directory(__SOURCE_DIRECTORY__, Includes=[|"MethodImplAttribute.Async.fs"|])>]
+    let ``Async_fs`` compilation =
+        compilation
+        |> verifyCompilation
+
+    // SOURCE=MethodImplAttribute.AsyncWithTask.fs         SCFLAGS="-a -g --optimize-" COMPILE_ONLY=1 POSTCMD="..\\CompareIL.cmd MethodImplAttribute.AsyncWithTask.dll"	# MethodImplAttribute.AsyncWithTask.fs - .NET 10 Runtime-Async with Task
+    [<Theory; Directory(__SOURCE_DIRECTORY__, Includes=[|"MethodImplAttribute.AsyncWithTask.fs"|])>]
+    let ``AsyncWithTask_fs`` compilation =
+        compilation
+        |> verifyCompilation
