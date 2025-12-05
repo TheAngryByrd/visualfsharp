@@ -9002,8 +9002,11 @@ and ComputeMethodImplAttribs cenv (_v: Val) attrs =
 
     // strip the MethodImpl pseudo-custom attribute
     // The following method implementation flags are used here
-    // 0x80 - hasPreserveSigImplFlag
-    // 0x20 - synchronize
+    // 0x0008 - no inlining
+    // 0x0020 - synchronize
+    // 0x0080 - preserve sig
+    // 0x0100 - aggressive inlining
+    // 0x2000 - async (runtime-async support, .NET 10+)
     // (See ECMA 335, Partition II, section 23.1.11 - Flags for methods [MethodImplAttributes])
     let attrs =
         attrs
@@ -9014,7 +9017,8 @@ and ComputeMethodImplAttribs cenv (_v: Val) attrs =
     let hasSynchronizedImplFlag = (implflags &&& 0x20) <> 0x0
     let hasNoInliningImplFlag = (implflags &&& 0x08) <> 0x0
     let hasAggressiveInliningImplFlag = (implflags &&& 0x0100) <> 0x0
-    hasPreserveSigImplFlag, hasSynchronizedImplFlag, hasNoInliningImplFlag, hasAggressiveInliningImplFlag, attrs
+    let hasAsyncImplFlag = (implflags &&& 0x2000) <> 0x0
+    hasPreserveSigImplFlag, hasSynchronizedImplFlag, hasNoInliningImplFlag, hasAggressiveInliningImplFlag, hasAsyncImplFlag, attrs
 
 and GenMethodForBinding
     cenv
@@ -9197,7 +9201,7 @@ and GenMethodForBinding
         | _ -> [], None
 
     // check if the hasPreserveSigNamedArg and hasSynchronizedImplFlag implementation flags have been specified
-    let hasPreserveSigImplFlag, hasSynchronizedImplFlag, hasNoInliningFlag, hasAggressiveInliningImplFlag, attrs =
+    let hasPreserveSigImplFlag, hasSynchronizedImplFlag, hasNoInliningFlag, hasAggressiveInliningImplFlag, hasAsyncImplFlag, attrs =
         ComputeMethodImplAttribs cenv v attrs
 
     let securityAttributes, attrs =
@@ -9474,6 +9478,7 @@ and GenMethodForBinding
                 .WithSynchronized(hasSynchronizedImplFlag)
                 .WithNoInlining(hasNoInliningFlag)
                 .WithAggressiveInlining(hasAggressiveInliningImplFlag)
+                .WithAsync(hasAsyncImplFlag)
                 .With(isEntryPoint = isExplicitEntryPoint, securityDecls = secDecls)
 
         let mdef =
@@ -10546,7 +10551,7 @@ and GenAbstractBinding cenv eenv tref (vref: ValRef) =
     let memberInfo = Option.get vref.MemberInfo
     let attribs = vref.Attribs
 
-    let hasPreserveSigImplFlag, hasSynchronizedImplFlag, hasNoInliningFlag, hasAggressiveInliningImplFlag, attribs =
+    let hasPreserveSigImplFlag, hasSynchronizedImplFlag, hasNoInliningFlag, hasAggressiveInliningImplFlag, hasAsyncImplFlag, attribs =
         ComputeMethodImplAttribs cenv vref.Deref attribs
 
     if memberInfo.MemberFlags.IsDispatchSlot && not memberInfo.IsImplemented then
@@ -10602,6 +10607,7 @@ and GenAbstractBinding cenv eenv tref (vref: ValRef) =
                 .WithSynchronized(hasSynchronizedImplFlag)
                 .WithNoInlining(hasNoInliningFlag)
                 .WithAggressiveInlining(hasAggressiveInliningImplFlag)
+                .WithAsync(hasAsyncImplFlag)
 
         match memberInfo.MemberFlags.MemberKind with
         | SynMemberKind.ClassConstructor
