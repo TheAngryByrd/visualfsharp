@@ -2073,6 +2073,10 @@ type ILMethodDef
 
     member x.IsMustRun = x.ImplAttributes &&& MethodImplAttributes.NoOptimization <> enum 0
 
+    /// Check if method is marked with MethodImplOptions.Async (0x2000)
+    /// This indicates the method uses runtime-async support (.NET 10+)
+    member x.IsAsync = x.ImplAttributes &&& enum<MethodImplAttributes>(0x2000) <> enum 0
+
     member x.WithSpecialName =
         x.With(attributes = (x.Attributes ||| MethodAttributes.SpecialName))
 
@@ -2131,6 +2135,10 @@ type ILMethodDef
 
     member x.WithRuntime(condition) =
         x.With(implAttributes = (x.ImplAttributes |> conditionalAdd condition MethodImplAttributes.Runtime))
+
+    /// Set the Async flag (MethodImplOptions.Async = 0x2000) for runtime-async support (.NET 10+)
+    member x.WithAsync(condition) =
+        x.With(implAttributes = (x.ImplAttributes |> conditionalAdd condition (enum<MethodImplAttributes>(0x2000))))
 
     [<DebuggerBrowsable(DebuggerBrowsableState.Never)>]
     member x.DebugText = x.ToString()

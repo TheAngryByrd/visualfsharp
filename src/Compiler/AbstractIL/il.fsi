@@ -1134,6 +1134,9 @@ type ILMethodDef =
     /// SafeHandle finalizer must be run.
     member IsMustRun: bool
 
+    /// Indicates method uses runtime-async support (MethodImplOptions.Async = 0x2000, .NET 10+)
+    member IsAsync: bool
+
     /// Functional update of the value
     member internal With:
         ?name: string *
@@ -1178,6 +1181,9 @@ type ILMethodDef =
     member internal WithAggressiveInlining: bool -> ILMethodDef
 
     member internal WithRuntime: bool -> ILMethodDef
+
+    /// Set the Async flag (MethodImplOptions.Async = 0x2000) for runtime-async support (.NET 10+)
+    member internal WithAsync: bool -> ILMethodDef
 
 /// Tables of methods.  Logically equivalent to a list of methods but
 /// the table is kept in a form optimized for looking up methods by
