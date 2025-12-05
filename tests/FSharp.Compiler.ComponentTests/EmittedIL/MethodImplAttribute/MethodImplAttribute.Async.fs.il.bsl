@@ -39,7 +39,7 @@
 {
   .custom instance void [FSharp.Core]Microsoft.FSharp.Core.CompilationMappingAttribute::.ctor(valuetype [FSharp.Core]Microsoft.FSharp.Core.SourceConstructFlags) = ( 01 00 07 00 00 00 00 00 ) 
   .method public static class [runtime]System.Threading.Tasks.Task`1<int32> 
-          asyncMethod() cil managed
+          asyncMethod() cil managed async
   {
     .custom instance void [runtime]System.Runtime.CompilerServices.MethodImplAttribute::.ctor(valuetype [runtime]System.Runtime.CompilerServices.MethodImplOptions) = ( 01 00 00 20 00 00 00 00 ) 
     
