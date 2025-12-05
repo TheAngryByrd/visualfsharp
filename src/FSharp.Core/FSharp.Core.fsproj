@@ -211,6 +211,12 @@
     <Compile Include="tasks.fs">
       <Link>Control/tasks.fs</Link>
     </Compile>
+    <Compile Include="asynchelpers.fsi">
+      <Link>Control/asynchelpers.fsi</Link>
+    </Compile>
+    <Compile Include="asynchelpers.fs">
+      <Link>Control/asynchelpers.fs</Link>
+    </Compile>
     <Compile Include="eventmodule.fsi">
       <Link>Control/eventmodule.fsi</Link>
     </Compile>
